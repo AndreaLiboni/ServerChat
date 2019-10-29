@@ -122,6 +122,7 @@ def privateMessage(pack, host):
 
     # da finire dopo aver finito l'array users
     # ciclo sul nome per trovare il socket
+    # uffa
     # pack_to_send = createMexPack(23, mitt, text)
     # sock.send(pack_to_send, socket trovato)
 
