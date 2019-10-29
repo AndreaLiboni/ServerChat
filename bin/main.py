@@ -5,10 +5,12 @@ import threading
 #   VARIABILI
 boolD = True
 users = []
-#Prova
+
+
 #   FUNZIONI
 def connect(sockCli, host):
     while (True):
+        username = ""
         sock.listen(4)
         pack = sockCli.recv(1024)
         if len(pack) > 0:
@@ -19,11 +21,14 @@ def connect(sockCli, host):
                 else:
                     sockCli.send(OK())
             elif pack[0] == 11:
-                err = login(pack)
-                if err:
-                    sockCli.send(error("Nome utente o password non validi"))
+                err = login(pack, sockCli)
+                if err == "Passoword non trovata" or err == "Username non trovato":
+                    sockCli.send(error(err))
                 else:
                     sockCli.send(OK())
+                    username = err
+            elif pack[0] == 12:
+                pass
 
 
 def OK():
@@ -40,7 +45,7 @@ def error(string):
     mex += data
     return mex
 
-def login(pack):
+def login(pack, sockCli):
     i = 3
     cc = True  # ContaCampi
     username = ""
@@ -59,11 +64,11 @@ def login(pack):
         campi = line.replace("\"", "").split(";")
         if campi[0] == username:
             if campi[1].rstrip("\n") == password:
-                users.append(username)
-                return True
+                users.append((username, sockCli))
+                return username
             else:
-                return False
-    return False
+                return "Passoword non trovata"
+    return "Username non trovato"
 
 def registrazione(pack):
     i = 3
