@@ -10,7 +10,6 @@ users = []
 #   FUNZIONI
 def connect(sockCli, host):
     while (True):
-        username = ""
         sock.listen(4)
         pack = sockCli.recv(1024)
         if len(pack) > 0:
@@ -21,14 +20,17 @@ def connect(sockCli, host):
                 else:
                     sockCli.send(OK())
             elif pack[0] == 11:
-                err = login(pack, sockCli)
-                if err == "Passoword non trovata" or err == "Username non trovato":
-                    sockCli.send(error(err))
+                err = login(pack)
+                if err:
+                    sockCli.send(error("Nome utente o password non validi"))
                 else:
                     sockCli.send(OK())
-                    username = err
-            elif pack[0] == 12:
-                pass
+            elif pack[0] == 22:
+                err = privateMessage(pack, host)
+                if err:
+                    sockCli.send(error("Messaggio non inviato"))
+                else:
+                    sockCli.send(error(OK()))
 
 
 def OK():
@@ -36,6 +38,7 @@ def OK():
     mex.append(0)
     mex += (0).to_bytes(2, byteorder="big")
     return mex
+
 
 def error(string):
     mex = bytearray()
@@ -45,7 +48,8 @@ def error(string):
     mex += data
     return mex
 
-def login(pack, sockCli):
+
+def login(pack):
     i = 3
     cc = True  # ContaCampi
     username = ""
@@ -64,15 +68,16 @@ def login(pack, sockCli):
         campi = line.replace("\"", "").split(";")
         if campi[0] == username:
             if campi[1].rstrip("\n") == password:
-                users.append((username, sockCli))
-                return username
+                users.append(username)
+                return True
             else:
-                return "Passoword non trovata"
-    return "Username non trovato"
+                return False
+    return False
+
 
 def registrazione(pack):
     i = 3
-    cc = True   #ContaCampi
+    cc = True  # ContaCampi
     username = ""
     password = ""
     while (i < len(pack)):
@@ -91,20 +96,66 @@ def addUser(username, password):
     fopen = open("../User/users.csv", "r")
     for line in fopen:
         campi = line.split(";")
-        if campi[0].replace("\"","") == username:
+        if campi[0].replace("\"", "") == username:
             fopen.close()
             return True
     fopen = open("../User/users.csv", "a")
-    fopen.write("\"" + username +"\";\"" + password + "\"\n")
+    fopen.write("\"" + username + "\";\"" + password + "\"\n")
     fopen.close()
     return False
+
+
+def privateMessage(pack, host):
+    i = 3
+    cc = True  # ContaCampi
+    dest = ""
+    text = ""
+    while (i < len(pack)):
+        if pack[i] == 0:
+            cc = False
+            i += 1
+        if cc:
+            dest += chr(pack[i])
+        else:
+            text += chr(pack[i])
+        i += 1
+
+    # da finire dopo aver finito l'array users
+    # ciclo sul nome per trovare il socket
+    # pack_to_send = createMexPack(23, mitt, text)
+    # sock.send(pack_to_send, socket trovato)
+
+    # fare controllo con return True/False
+
+
+def createMexPack(mode, mitt, text):
+    mex = bytearray()
+
+    mex.append(mode)
+    info = dataToBytes([mitt, text])
+    mex.append(len(info).to_bytes(2, byteorder="big"))
+    mex.append(info)
+
+    print(mex)
+
+    return mex
+
+
+def dataToBytes(data):
+    bytes = bytearray()
+    for d in data:
+        bytes += (bytearray(d.encode()))
+        if data.index != len(data) - 1:
+            bytes.append(0)
+    return bytes
+
 
 #   MAIN
 if __name__ == "__main__":
     if boolD:
         print("Inizio programma")
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.bind(("172.16.20.6", 2000))
+    sock.bind(("172.16.20.143", 2000))
     print("Per collegarsi usare il seguente nome e specificare la porta 2000:" + socket.gethostname())
     sock.listen(4)
     connections = []
