@@ -5,7 +5,7 @@ import threading
 #   VARIABILI
 boolD = True
 users = []
-
+#Prova
 #   FUNZIONI
 def connect(sockCli, host):
     while (True):
