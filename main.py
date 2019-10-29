@@ -5,10 +5,11 @@ import threading
 #   VARIABILI
 boolD = True
 users = []
-#Prova
+
+
 #   FUNZIONI
 def connect(sockCli, host):
-    while (True):
+    while True:
         sock.listen(4)
         pack = sockCli.recv(1024)
         if len(pack) > 0:
@@ -32,6 +33,7 @@ def OK():
     mex += (0).to_bytes(2, byteorder="big")
     return mex
 
+
 def error(string):
     mex = bytearray()
     mex.append(1)
@@ -39,6 +41,7 @@ def error(string):
     mex += len(data).to_bytes(2, byteorder="big")
     mex += data
     return mex
+
 
 def login(pack):
     i = 3
@@ -60,14 +63,15 @@ def login(pack):
         if campi[0] == username:
             if campi[1].rstrip("\n") == password:
                 users.append(username)
-                return True
+                return True  # ok
             else:
-                return False
+                return False  # non ok
     return False
+
 
 def registrazione(pack):
     i = 3
-    cc = True   #ContaCampi
+    cc = True  # ContaCampi
     username = ""
     password = ""
     while (i < len(pack)):
@@ -86,20 +90,23 @@ def addUser(username, password):
     fopen = open("../User/users.csv", "r")
     for line in fopen:
         campi = line.split(";")
-        if campi[0].replace("\"","") == username:
+        if campi[0].replace("\"", "") == username:
             fopen.close()
-            return True
+            return True  # errore
     fopen = open("../User/users.csv", "a")
-    fopen.write("\"" + username +"\";\"" + password + "\"\n")
+    fopen.write("\"" + username + "\";\"" + password + "\"\n")
     fopen.close()
-    return False
+    return False  # ok
+
 
 #   MAIN
 if __name__ == "__main__":
     if boolD:
         print("Inizio programma")
+
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.bind(("172.16.20.6", 2000))
+
     print("Per collegarsi usare il seguente nome e specificare la porta 2000:" + socket.gethostname())
     sock.listen(4)
     connections = []
