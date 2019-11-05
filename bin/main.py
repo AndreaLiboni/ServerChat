@@ -25,9 +25,10 @@ def connect(sockCli, host):
                 if err == "Passoword non trovata" or err == "Username non trovato":
                     sockCli.send(error(err))
                 else:
+                    username = err
                     sockCli.send(OK())
             elif pack[0] == 22:
-                err = privateMessage(pack, host)
+                err = privateMessage(pack, username)
                 if err:
                     sockCli.send(error("Messaggio non inviato"))
                 else:
@@ -40,6 +41,7 @@ def OK():
     mex += (0).to_bytes(2, byteorder="big")
     return mex
 
+
 def error(string):
     mex = bytearray()
     mex.append(1)
@@ -48,11 +50,13 @@ def error(string):
     mex += data
     return mex
 
+
 def logout(username):
-    for i in range (len(users)):
+    for i in range(len(users)):
         user = users[i]
         if user[0] == username:
             del users[i]
+
 
 def login(pack, sockCli):
     i = 3
@@ -79,9 +83,10 @@ def login(pack, sockCli):
                 return "Passoword non trovata"
     return "Username non trovato"
 
+
 def registrazione(pack):
     i = 3
-    cc = True   #ContaCampi
+    cc = True  # ContaCampi
     username = ""
     password = ""
     while (i < len(pack)):
@@ -100,16 +105,16 @@ def addUser(username, password):
     fopen = open("../User/users.csv", "r")
     for line in fopen:
         campi = line.split(";")
-        if campi[0].replace("\"","") == username:
+        if campi[0].replace("\"", "") == username:
             fopen.close()
             return True
     fopen = open("../User/users.csv", "a")
-    fopen.write("\"" + username +"\";\"" + password + "\"\n")
+    fopen.write("\"" + username + "\";\"" + password + "\"\n")
     fopen.close()
     return False
 
 
-def privateMessage(pack, host):
+def privateMessage(pack, user):
     i = 3
     cc = True  # ContaCampi
     dest = ""
@@ -124,13 +129,17 @@ def privateMessage(pack, host):
             text += chr(pack[i])
         i += 1
 
-    # da finire dopo aver finito l'array users
-    # ciclo sul nome per trovare il socket
-    # uffa
-    # pack_to_send = createMexPack(23, mitt, text)
-    # sock.send(pack_to_send, socket trovato)
+    socket_dest = ""
+    for us in users:
+        if us[0] == dest:
+            socket_dest = us[1]
 
-    # fare controllo con return True/False
+    try:
+        pack_to_send = createMexPack(23, user, text)
+        sock.send(pack_to_send, socket_dest)
+        return False
+    except:
+        return True
 
 
 def createMexPack(mode, mitt, text):
