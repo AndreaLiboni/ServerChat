@@ -135,7 +135,8 @@ def createMexPack(mode, mitt, text):
     mex.append(len(info).to_bytes(2, byteorder="big"))
     mex.append(info)
 
-    print(mex)
+    if boolD:
+        print(mex)
 
     return mex
 
