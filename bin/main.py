@@ -144,8 +144,8 @@ def privateMessage(pack, user):
             socket_dest = us[1]
 
     pack_to_send = createMexPack(23, user, text)
-    socket_dest.send(pack_to_send)
     try:
+        socket_dest.send(pack_to_send)
         return False
     except:
         return True
