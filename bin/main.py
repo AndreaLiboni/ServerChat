@@ -32,7 +32,6 @@ def connect(sockCli, host):
                 else:
                     sockCli.send(error(OK()))
 
-
 def OK():
     mex = bytearray()
     mex.append(0)
