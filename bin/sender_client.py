@@ -24,7 +24,7 @@ def createData():
 if __name__ == "__main__":
     if boolD:
         print("Inizio programma")
-        host = "LAPTOP-P1G7L1TM"
+        host = "172.16.20.143"
         port = 2000
     else:
         host = input("Inserire l'indirizzo IP del server:")
@@ -32,7 +32,6 @@ if __name__ == "__main__":
     mex = createMex()
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.connect((host, port))
-    sock.settimeout(5)
     sock.send(mex)
     print("Il messaggio inviato è: " + str(mex))
     mexRic = sock.recv(1024)

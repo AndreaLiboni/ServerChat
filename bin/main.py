@@ -143,9 +143,9 @@ def privateMessage(pack, user):
         if us[0] == dest:
             socket_dest = us[1]
 
+    pack_to_send = createMexPack(23, user, text)
+    socket_dest.send(pack_to_send)
     try:
-        pack_to_send = createMexPack(23, user, text)
-        sock.send(pack_to_send, socket_dest)
         return False
     except:
         return True
@@ -156,8 +156,8 @@ def createMexPack(mode, mitt, text):
 
     mex.append(mode)
     info = dataToBytes([mitt, text])
-    mex.append(len(info).to_bytes(2, byteorder="big"))
-    mex.append(info)
+    mex += (len(info).to_bytes(2, byteorder="big"))
+    mex += (info)
 
     if boolD:
         print(mex)
@@ -169,7 +169,7 @@ def dataToBytes(data):
     bytes = bytearray()
     for d in data:
         bytes += (bytearray(d.encode()))
-        if data.index != len(data) - 1:
+        if data.index(d) != len(data) - 1:
             bytes.append(0)
     return bytes
 
@@ -179,7 +179,7 @@ if __name__ == "__main__":
     if boolD:
         print("Inizio programma")
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.bind((socket.gethostname(), 2000))
+    sock.bind(("172.16.20.143", 2000))
     print("Per collegarsi usare il seguente nome e specificare la porta 2000:" + socket.gethostname())
     sock.listen(4)
     connections = []
