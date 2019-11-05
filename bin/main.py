@@ -29,18 +29,19 @@ def connect(sockCli, host):
                     username = err
                     log = True
                     sockCli.send(OK())
-            elif pack[0] == 12:
-                err = logout(username)
-            elif pack[0] == 20:
-                pass
-            elif pack[0] == 22:
-                err = privateMessage(pack, username)
-                if err:
-                    sockCli.send(error("Messaggio non inviato"))
-                else:
-                    sockCli.send(OK())
-            elif pack[0] == 24:
-                pass
+            if log:
+                if pack[0] == 12:
+                    err = logout(username)
+                elif pack[0] == 20:
+                    pass
+                elif pack[0] == 22:
+                    err = privateMessage(pack, username)
+                    if err:
+                        sockCli.send(error("Messaggio non inviato"))
+                    else:
+                        sockCli.send(OK())
+                elif pack[0] == 24:
+                    pass
 
 
 def OK():
