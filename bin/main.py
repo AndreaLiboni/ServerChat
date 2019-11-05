@@ -9,6 +9,7 @@ users = []
 
 #   FUNZIONI
 def connect(sockCli, host):
+    username = ""
     while (True):
         sock.listen(4)
         pack = sockCli.recv(1024)
@@ -39,7 +40,6 @@ def OK():
     mex += (0).to_bytes(2, byteorder="big")
     return mex
 
-
 def error(string):
     mex = bytearray()
     mex.append(1)
@@ -48,6 +48,11 @@ def error(string):
     mex += data
     return mex
 
+def logout(username):
+    for i in range (len(users)):
+        user = users[i]
+        if user[0] == username:
+            del users[i]
 
 def login(pack, sockCli):
     i = 3
@@ -74,10 +79,9 @@ def login(pack, sockCli):
                 return "Passoword non trovata"
     return "Username non trovato"
 
-
 def registrazione(pack):
     i = 3
-    cc = True  # ContaCampi
+    cc = True   #ContaCampi
     username = ""
     password = ""
     while (i < len(pack)):
@@ -96,11 +100,11 @@ def addUser(username, password):
     fopen = open("../User/users.csv", "r")
     for line in fopen:
         campi = line.split(";")
-        if campi[0].replace("\"", "") == username:
+        if campi[0].replace("\"","") == username:
             fopen.close()
             return True
     fopen = open("../User/users.csv", "a")
-    fopen.write("\"" + username + "\";\ "" + password + ""\" \n")
+    fopen.write("\"" + username +"\";\"" + password + "\"\n")
     fopen.close()
     return False
 
