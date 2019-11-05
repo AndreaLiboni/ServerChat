@@ -10,6 +10,7 @@ users = []
 #   FUNZIONI
 def connect(sockCli, host):
     username = ""
+    log = False
     while (True):
         sock.listen(1)
         pack = sockCli.recv(1024)
@@ -26,6 +27,7 @@ def connect(sockCli, host):
                     sockCli.send(error(err))
                 else:
                     username = err
+                    log = True
                     sockCli.send(OK())
             elif pack[0] == 12:
                 err = logout(username)
