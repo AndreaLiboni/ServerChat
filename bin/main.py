@@ -9,6 +9,7 @@ users = []
 
 #   FUNZIONI
 def connect(sockCli, host):
+    username = ""
     while (True):
         sock.listen(4)
         pack = sockCli.recv(1024)
@@ -25,12 +26,9 @@ def connect(sockCli, host):
                     sockCli.send(error(err))
                 else:
                     sockCli.send(OK())
-            elif pack[0] == 22:
-                err = privateMessage(pack, host)
-                if err:
-                    sockCli.send(error("Messaggio non inviato"))
-                else:
-                    sockCli.send(error(OK()))
+                    username = err
+            elif pack[0] == 12:
+                err = logout(username)
 
 
 def OK():
@@ -39,7 +37,6 @@ def OK():
     mex += (0).to_bytes(2, byteorder="big")
     return mex
 
-
 def error(string):
     mex = bytearray()
     mex.append(1)
@@ -47,6 +44,12 @@ def error(string):
     mex += len(data).to_bytes(2, byteorder="big")
     mex += data
     return mex
+
+def logout(username):
+    for i in range (len(users)):
+        user = users[i]
+        if user[0] == username:
+            del users[i]
 
 def login(pack, sockCli):
     i = 3
@@ -101,53 +104,6 @@ def addUser(username, password):
     fopen.write("\"" + username +"\";\"" + password + "\"\n")
     fopen.close()
     return False
-
-
-def privateMessage(pack, host):
-    i = 3
-    cc = True  # ContaCampi
-    dest = ""
-    text = ""
-    while (i < len(pack)):
-        if pack[i] == 0:
-            cc = False
-            i += 1
-        if cc:
-            dest += chr(pack[i])
-        else:
-            text += chr(pack[i])
-        i += 1
-
-    # da finire dopo aver finito l'array users
-    # ciclo sul nome per trovare il socket
-    # uffa
-    # pack_to_send = createMexPack(23, mitt, text)
-    # sock.send(pack_to_send, socket trovato)
-
-    # fare controllo con return True/False
-
-
-def createMexPack(mode, mitt, text):
-    mex = bytearray()
-
-    mex.append(mode)
-    info = dataToBytes([mitt, text])
-    mex.append(len(info).to_bytes(2, byteorder="big"))
-    mex.append(info)
-
-    print(mex)
-
-    return mex
-
-
-def dataToBytes(data):
-    bytes = bytearray()
-    for d in data:
-        bytes += (bytearray(d.encode()))
-        if data.index != len(data) - 1:
-            bytes.append(0)
-    return bytes
-
 
 #   MAIN
 if __name__ == "__main__":
