@@ -171,6 +171,7 @@ def dataToBytes(data):
         bytes += (bytearray(d.encode()))
         if data.index(d) != len(data) - 1:
             bytes.append(0)
+    print(bytes)
     return bytes
 
 
