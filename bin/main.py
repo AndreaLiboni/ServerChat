@@ -39,7 +39,11 @@ def connect(sockCli, host):
                     else:
                         sockCli.send(error("Utente non trovato"))
                 elif pack[0] == 20:
-                    pass
+                    err = broadcast(pack, username)
+                    if err:
+                        sockCli.send(error("Messaggio non inviato"))
+                    else:
+                        sockCli.send(OK())
                 elif pack[0] == 22:
                     err = privateMessage(pack, username)
                     if err:
@@ -47,7 +51,11 @@ def connect(sockCli, host):
                     else:
                         sockCli.send(OK())
                 elif pack[0] == 24:
-                    pass
+                    err = multicast(pack, username)
+                    if err:
+                        sockCli.send(error("Messaggio non inviato"))
+                    else:
+                        sockCli.send(OK())
 
 
 def OK():
@@ -70,7 +78,7 @@ def logout(username):
     for i in range(len(users)):
         user = users[i]
         if user[0] == username:
-            #user[1].close()
+            # user[1].close()
             del users[i]
             return True
     return False
@@ -132,6 +140,20 @@ def addUser(username, password):
     return False
 
 
+def broadcast(pack, user):
+    text = pack[3]
+    dests = []
+    for us in users:
+        if us != user[0]:
+            dests.append(us[0])
+
+    try:
+        sender(21, dests, text, user)
+        return False
+    except:
+        return True
+
+
 def privateMessage(pack, user):
     i = 3
     cc = True  # ContaCampi
@@ -153,6 +175,7 @@ def privateMessage(pack, user):
     except:
         return True
 
+
 def sender(mode, dest, text, mitt):
     sock_dest = []
     for d in dest:
@@ -163,6 +186,7 @@ def sender(mode, dest, text, mitt):
     pack = createMexPack(mode, mitt, text)
     for sd in sock_dest:
         sd.send(pack)
+
 
 def createMexPack(mode, mitt, text):
     mex = bytearray()
