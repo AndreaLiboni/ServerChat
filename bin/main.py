@@ -32,6 +32,11 @@ def connect(sockCli, host):
             if log:
                 if pack[0] == 12:
                     err = logout(username)
+                    if err:
+                        sockCli.send(OK())
+                        break
+                    else:
+                        sockCli.send(error("Utente non trovato"))
                 elif pack[0] == 20:
                     pass
                 elif pack[0] == 22:
@@ -66,6 +71,8 @@ def logout(username):
         if user[0] == username:
             user[1].close()
             del users[i]
+            return True
+    return False
 
 
 def login(pack, sockCli):
