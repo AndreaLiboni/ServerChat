@@ -39,7 +39,11 @@ def connect(sockCli, host):
                     else:
                         sockCli.send(error("Utente non trovato"))
                 elif pack[0] == 20:
-                    pass
+                    err = broadcast(pack, username)
+                    if err:
+                        sockCli.send(error("Messaggio non inviato"))
+                    else:
+                        sockCli.send(OK())
                 elif pack[0] == 22:
                     err = privateMessage(pack, username)
                     if err:
@@ -47,7 +51,11 @@ def connect(sockCli, host):
                     else:
                         sockCli.send(OK())
                 elif pack[0] == 24:
-                    pass
+                    err = multicast(pack, username)
+                    if err:
+                        sockCli.send(error("Messaggio non inviato"))
+                    else:
+                        sockCli.send(OK())
 
 
 def OK():
@@ -130,6 +138,20 @@ def addUser(username, password):
     fopen.write("\"" + username + "\";\"" + password + "\"\n")
     fopen.close()
     return False
+
+
+def broadcast(pack, user):
+    text = pack[3]
+    dests = []
+    for us in users:
+        if us != user[0]:
+            dests.append(us[0])
+
+    try:
+        sender(21, dests, text, user)
+        return False
+    except:
+        return True
 
 
 def privateMessage(pack, user):
