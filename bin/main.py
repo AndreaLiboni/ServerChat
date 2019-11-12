@@ -56,6 +56,12 @@ def connect(sockCli, host):
                         sockCli.send(error("Messaggio non inviato"))
                     else:
                         sockCli.send(OK())
+                elif pack[0] == 42:
+                    err = list()
+                    if err:
+                        sockCli.send(error("ERRORE"))
+                    else:
+                        pass
 
 
 def OK():
@@ -72,16 +78,6 @@ def error(string):
     mex += len(data).to_bytes(2, byteorder="big")
     mex += data
     return mex
-
-
-def logout(username):
-    for i in range(len(users)):
-        user = users[i]
-        if user[0] == username:
-            #user[1].close()
-            del users[i]
-            return True
-    return False
 
 
 def login(pack, sockCli):
@@ -108,6 +104,16 @@ def login(pack, sockCli):
             else:
                 return "Passoword non trovata"
     return "Username non trovato"
+
+
+def logout(username):
+    for i in range(len(users)):
+        user = users[i]
+        if user[0] == username:
+            # user[1].close()
+            del users[i]
+            return True
+    return False
 
 
 def registrazione(pack):
@@ -181,6 +187,7 @@ def privateMessage(pack, user):
     except:
         return True
 
+
 def multicast(pack, user):
     vett = []
     i = 3
@@ -194,13 +201,14 @@ def multicast(pack, user):
     destinatari = []
     text = ""
     for i in range(len(vett)):
-        if i+1 >= len(vett):
+        if i + 1 >= len(vett):
             text = vett[i]
         else:
             destinatari.append(vett[i])
     print(text)
     print(destinatari)
     sender(25, destinatari, text, user)
+
 
 def sender(mode, dest, text, mitt):
     sock_dest = []
@@ -213,6 +221,7 @@ def sender(mode, dest, text, mitt):
     for sd in sock_dest:
         sd.send(pack)
 
+
 def createMexPack(mode, mitt, text):
     mex = bytearray()
 
@@ -222,6 +231,26 @@ def createMexPack(mode, mitt, text):
     mex += (info)
 
     return mex
+
+
+def list():
+    online_users = []
+    for us in users:
+        online_users.append(us[0])
+
+    online_users = dataToBytes(online_users)
+
+    pack = bytearray()
+    pack.append(43)
+
+    pack += len(online_users)
+    pack += online_users
+
+    try:
+        sockCli.send(pack)
+        return False
+    except:
+        return True
 
 
 def dataToBytes(data):
