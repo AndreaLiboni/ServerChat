@@ -38,16 +38,13 @@ if __name__ == "__main__":
     print("Il messaggio ricevuto è:" + str(mexRic))
     ####################################
     pack = bytearray()
-    pack.append(22)
+    pack.append(20)
     ###########
     data = bytearray()
-    data += ("Francesco".encode())
-    data.append(0)
-    data += ("Ciao mondo".encode())
+    data += ("Sono un bel messaggio".encode())
     ###########
     pack += len(data).to_bytes(2, byteorder="big")
     pack += data
-
     sock.send(pack)
     print("Il messaggio inviato è: " + str(pack))
     mexRic = sock.recv(1024)
