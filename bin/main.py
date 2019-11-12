@@ -141,7 +141,12 @@ def addUser(username, password):
 
 
 def broadcast(pack, user):
-    text = pack[3]
+    text = ""
+    i = 3
+    while i < len(pack):
+        text += chr(pack[i])
+        i += 1
+
     dests = []
     for us in users:
         if us != user[0]:
@@ -159,6 +164,7 @@ def privateMessage(pack, user):
     cc = True  # ContaCampi
     dest = ""
     text = ""
+
     while (i < len(pack)):
         if pack[i] == 0:
             cc = False

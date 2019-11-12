@@ -15,9 +15,9 @@ def createMex():
 
 def createData():
     data = bytearray()
-    data += ("Andrea".encode())
+    data += ("Test".encode())
     data.append(0)
-    data += ("Ciao".encode())
+    data += ("Test".encode())
     return data
 
 #   MAIN
