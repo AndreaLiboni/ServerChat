@@ -99,6 +99,9 @@ def login(pack, sockCli):
         campi = line.replace("\"", "").split(";")
         if campi[0] == username:
             if campi[1].rstrip("\n") == password:
+                for i in len(users):
+                    if username == users[i][0]:
+                        return "Utente gia' online"
                 users.append((username, sockCli))
                 return username
             else:
