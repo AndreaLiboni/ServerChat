@@ -153,6 +153,27 @@ def privateMessage(pack, user):
     except:
         return True
 
+def multicast(pack, user):
+    vett = []
+    i = 3
+    dest = ""
+    while (i < len(pack)):
+        if pack[i] == 0:
+            vett.append(dest)
+            dest = ""
+        dest += chr(pack[i])
+        i += 1
+    destinatari = []
+    text = ""
+    for i in range(len(vett)):
+        if i+1 >= len(vett):
+            text = vett[i]
+        else:
+            destinatari.append(vett[i])
+    print(text)
+    print(destinatari)
+    sender(25, destinatari, text, user)
+
 def sender(mode, dest, text, mitt):
     sock_dest = []
     for d in dest:
