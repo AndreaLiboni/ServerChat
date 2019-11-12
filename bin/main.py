@@ -34,6 +34,7 @@ def connect(sockCli, host):
                     err = logout(username)
                     if err:
                         sockCli.send(OK())
+                        sockCli.close()
                         break
                     else:
                         sockCli.send(error("Utente non trovato"))
@@ -69,7 +70,7 @@ def logout(username):
     for i in range(len(users)):
         user = users[i]
         if user[0] == username:
-            user[1].close()
+            #user[1].close()
             del users[i]
             return True
     return False
@@ -146,18 +147,22 @@ def privateMessage(pack, user):
             text += chr(pack[i])
         i += 1
 
-    socket_dest = ""
-    for us in users:
-        if us[0] == dest:
-            socket_dest = us[1]
-
-    pack_to_send = createMexPack(23, user, text)
     try:
-        socket_dest.send(pack_to_send)
+        sender(23, [dest], text, user)
         return False
     except:
         return True
 
+def sender(mode, dest, text, mitt):
+    sock_dest = []
+    for d in dest:
+        for us in users:
+            if us[0] == d:
+                sock_dest.append(us[1])
+
+    pack = createMexPack(mode, mitt, text)
+    for sd in sock_dest:
+        sd.send(pack)
 
 def createMexPack(mode, mitt, text):
     mex = bytearray()
@@ -166,9 +171,6 @@ def createMexPack(mode, mitt, text):
     info = dataToBytes([mitt, text])
     mex += (len(info).to_bytes(2, byteorder="big"))
     mex += (info)
-
-    if boolD:
-        print(mex)
 
     return mex
 
@@ -179,7 +181,6 @@ def dataToBytes(data):
         bytes += (bytearray(d.encode()))
         if data.index(d) != len(data) - 1:
             bytes.append(0)
-    print(bytes)
     return bytes
 
 
@@ -199,5 +200,5 @@ if __name__ == "__main__":
         connections.append(threading.Thread(target=connect, args=(sockCli, host)))
         connections[conta].start()
         conta += 1
-        for i in range(len(users)):
-            print(users[i])
+        # for i in range(len(users)):
+        #     print(users[i])
