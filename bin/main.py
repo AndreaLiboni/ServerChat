@@ -18,7 +18,7 @@ def connect(sockCli, host):
             if pack[0] == 10:
                 err = registrazione(pack)
                 if err:
-                    sockCli.send(error("Nome utente già presente"))
+                    sockCli.send(error("Nome utente gia' presente"))
                 else:
                     sockCli.send(OK())
             elif pack[0] == 11:
@@ -64,6 +64,7 @@ def logout(username):
     for i in range(len(users)):
         user = users[i]
         if user[0] == username:
+            user[1].close()
             del users[i]
 
 
