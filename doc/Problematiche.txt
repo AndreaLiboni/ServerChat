@@ -1,6 +1,0 @@
-1.  REGISTRAZIONE
-
-2.  LOGIN
-evitare che un utente si possa loggare piu volte contemporaneamente.
-
-3.  LOGOUT
